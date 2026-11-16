@@ -67,7 +67,7 @@ Every patch bound tighter than it could be: the open gaps, then the blocked, kep
 | [Hyrule Warriors: Age of Calamity](#hyrule-warriors-age-of-calamity) | 0 | 0 | 10 | 0 | 0 | `game`, `build` → `game` |
 | [Luigi's Mansion 3](#luigis-mansion-3) | 0 | 0 | 0 | 0 | 1 | `build` → `engine` |
 | [Mario + Rabbids® Sparks of Hope](#mario--rabbids-sparks-of-hope) | 1 | 0 | 0 | 0 | 0 | `build` → `game` |
-| [Mario Kart World](#mario-kart-world) | 0 | 0 | 1 | 0 | 0 | `game` |
+| [Mario Kart World](#mario-kart-world) | 0 | 0 | 1 | 0 | 0 | `game` ×2 |
 | [Monster Hunter Rise](#monster-hunter-rise) | 0 | 0 | 0 | 0 | 1 | `build` → `engine` |
 | [Need For Speed™ Hot Pursuit Remastered](#need-for-speed-hot-pursuit-remastered) | 1 | 0 | 0 | 0 | 5 | `build` → `game`, `build` → `engine` |
 | [NieR:Automata The End of YoRHa Edition (010056B015FE8000)](#nierautomata-the-end-of-yorha-edition-010056b015fe8000) | 8 | 0 | 0 | 0 | 1 | `build` → `game` ×2 |
@@ -80,7 +80,7 @@ Every patch bound tighter than it could be: the open gaps, then the blocked, kep
 | [Taiko Risshiden V DX](#taiko-risshiden-v-dx) | 1 | 0 | 0 | 2 | 0 | `game` |
 | [The Legend of Zelda: Breath of the Wild](#the-legend-of-zelda-breath-of-the-wild) | 7 | 0 | 43 | 0 | 0 | `build` → `game` ×2 |
 | [The Legend of Zelda: Link's Awakening](#the-legend-of-zelda-links-awakening) | 1 | 0 | 0 | 0 | 0 | `build` → `game` |
-| [The Legend of Zelda: Ocarina of Time](#the-legend-of-zelda-ocarina-of-time) | 0 | 0 | 2 | 0 | 0 | `game` ×2 |
+| [The Legend of Zelda: Ocarina of Time](#the-legend-of-zelda-ocarina-of-time) | 0 | 0 | 4 | 0 | 0 | `game` ×4 |
 | [The Legend of Zelda: Tears of the Kingdom](#the-legend-of-zelda-tears-of-the-kingdom) | 0 | 0 | 9 | 0 | 0 | `game` |
 | [Xenoblade Chronicles 3](#xenoblade-chronicles-3) | 6 | 0 | 0 | 0 | 0 | `build` → `game` |
 | [Xenoblade Chronicles X: Definitive Edition](#xenoblade-chronicles-x-definitive-edition) | 6 | 0 | 1 | 1 | 0 | `game` ×2 |
@@ -358,9 +358,10 @@ Every patch bound tighter than it could be: the open gaps, then the blocked, kep
 [Mario Kart World](../../dm/games/0400C3F00006E000/README.md), `0400C3F00006E000`, [patches.py](../../dm/games/0400C3F00006E000/patches.py).
 
 - **`game`**, frame rate, at goal, checked: v0 and 1.8.0 mains: one function with each fingerprint, the sites and the free registers read by disassembly (2026-11-08, 1.8.0 2026-11-12): frame interval from the host's step. The game's own interval choice, found by its function's fingerprint on any build that keeps the function
+- **`game`**, rendering, at goal, checked: 1.8.0 main: one function with this fingerprint, pacibsp at its start, its one caller and that the caller reads no result, by disassembly (2026-11-15); not run: dynamic resolution: full size unless DM_DYNAMIC_RESOLUTION. The game's own dynamic-resolution update, found by its function's fingerprint on any build that keeps it; switchable (DM_DYNAMIC_RESOLUTION)
 
 - **function-matched frame step** (`main` of builds without FRAME_STEP): frame interval from the host's step: a function of 0x290 bytes, `+0xa0` in it
-- **function-matched frame step** (`main` of builds without FRAME_STEP): frame interval from the host's step: a function of 0x28c bytes, `+0xa4` in it
+- **function-matched frame step** (`main` of builds without FRAME_STEP): frame interval from the host's step: a function of 0x28c bytes, `+0xa4` in it; dynamic resolution update, a function of 0xa58 bytes, `+0x0` in it; launcher capabilities: DYNAMIC_RESOLUTION
 
 ### Monster Hunter Rise
 
@@ -581,8 +582,10 @@ Every patch bound tighter than it could be: the open gaps, then the blocked, kep
 
 - **`game`**, frame rate, at goal, checked: v131072 main: one function with this fingerprint, the site and its free registers read by disassembly (2026-11-08): frame ratio from the host's step. The game's own frame-ratio division, found by its function's fingerprint on any build that keeps the function
 - **`game`**, rendering, at goal, checked: v131072 main: one function with each fingerprint (the level function a leaf, x2..x11 / x16 / x17 / s0..s2 free), its callers, the update and the controller fields read by disassembly, the fields read in play (2026-11-08); the climb run natively against a model of the update and in play to full size (2026-11-09): dynamic resolution: full size, or a climb on the load measured at each level. The game's own dynamic-resolution level function and update, found by their functions' fingerprints on any build that keeps both; switchable (DM_DYNAMIC_RESOLUTION)
+- **`game`**, rendering, at goal, checked: v131072 main: one function with this fingerprint, the two words at +0x200, no x16 / x17 in nnMain, no branch to +0x204 or +0x208, not rewrite sites, by disassembly (2026-11-16); in play: boot window 3840x2160, WindowInitialize 3840x2160 (ygy-75, 2026-11-16): boot window size from the host (DM_DISPLAY_BUFFER docked), else 2560x1440. NnMain's constant window size, found by its function's fingerprint on any build that keeps the function; 0 in the state word keeps the game's
+- **`game`**, rendering, at goal, checked: v131072 main: one function with this fingerprint, pacibsp at its entry, one caller (bl, x1 = the argument), arg+8 read as a w | h pair by both consumers, no x16 / x17, no branch to +4, by disassembly (2026-11-16); not run: graphics init: 3D base and crop (arg+8) from the host (DM_DISPLAY_BUFFER docked), else the game's. A workaround at the value's consumer: the writer of the 2560x1440 at arg+8 is open; 0 in the state word keeps the game's
 
-- **function-matched frame step** (`main` of builds without FRAME_STEP): frame ratio from the host's step: a function of 0x9b4 bytes, `+0xe4` in it; dynamic resolution, a function of 0x294 bytes, `+0x0` in it; dynamic resolution update, a function of 0xb24 bytes,  in it; launcher capabilities: DYNAMIC_RESOLUTION
+- **function-matched frame step** (`main` of builds without FRAME_STEP): frame ratio from the host's step: a function of 0x9b4 bytes, `+0xe4` in it; dynamic resolution, a function of 0x294 bytes, `+0x0` in it; dynamic resolution update, a function of 0xb24 bytes,  in it; window size, a function of 0x570 bytes, `+0x200` in it; gfx init, a function of 0x2fc bytes, `+0x0` in it; launcher capabilities: DYNAMIC_RESOLUTION, WINDOW_SIZE
 
 ### The Legend of Zelda: Tears of the Kingdom
 
